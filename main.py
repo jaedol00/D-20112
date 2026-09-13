@@ -55,40 +55,61 @@ selected_movie = st.sidebar.selectbox("분석할 영화를 선택하세요", mov
 filtered_df = df[df["영화명"] == selected_movie]
 
 # -----------------------------------------------------------------------------
-# 5. 구역 나누기 (탭 구조를 활용한 그래프 구역 분리)
+# 5. 구역 나누기 (탭 구조 활용)
 # -----------------------------------------------------------------------------
-tab1, tab2 = st.tabs(["📈 일별 관객수 추이", "📊 (추가 예정 구역)"])
+tab1, tab2 = st.tabs(["📈 일별 관객수 추이", "📊 누적 관객수 추이"])
 
-# 첫 번째 탭: 선그래프 구역
+# -----------------------------------------------------------------------------
+# 첫 번째 탭: 선 그래프 (일별 관객수)
+# -----------------------------------------------------------------------------
 with tab1:
     st.subheader(f"[{selected_movie}] 일별 관객수 변화 그래프")
 
-    # 4. Plotly 선 그래프 생성
-    fig = px.line(
+    # Plotly 선 그래프 생성
+    fig_line = px.line(
         filtered_df,
         x="기준일자",
         y="해당일관객수",
-        title=f"{selected_movie} - 기준일자별 관객수 추이",
-        markers=True,  # 데이터 포인트에 점을 표시
+        title=f"{selected_movie} - 기준일자별 해당일 관객수 추이",
+        markers=True,  # 데이터 포인트에 점 표시
     )
 
     # 그래프 축 및 레이아웃 커스텀
-    fig.update_layout(
+    fig_line.update_layout(
         xaxis_title="기준일자", yaxis_title="해당일 관객수", hovermode="x unified"
     )
 
-    # 스트림릿 웹 화면에 Plotly 그래프 출력 (너비에 맞춤)
-    st.plotly_chart(fig, use_container_width=True)
+    # 스트림릿 웹 화면에 그래프 출력
+    st.plotly_chart(fig_line, use_container_width=True)
 
-    # 5. 그래프 하단 설명을 위한 영역 생성
+    # 하단 설명 영역
     st.info(
         "💡 **이 그래프로 알 수 있는 것:** 영화 개봉 후 날짜별 관객수의 증감 추세와 최고 관객수를 기록한 시점을 파악할 수 있습니다."
     )
 
-# 두 번째 탭: 추후 그래프 추가를 위한 여분 구역
+# -----------------------------------------------------------------------------
+# 두 번째 탭: 영역 차트 (누적 관객수)
+# -----------------------------------------------------------------------------
 with tab2:
-    st.subheader("📌 추후 시각화 요소 추가 구역")
-    st.write("앞으로 추가할 그래프나 데이터 테이블을 이 영역에 작성해 보세요.")
+    st.subheader(f"[{selected_movie}] 누적 관객수 변화 그래프")
 
-    # 하단 설명 영역 템플릿
-    st.info("💡 **이 그래프로 알 수 있는 것:** (새로운 그래프 분석 내용을 적는 자리입니다)")
+    # Plotly 영역 차트(Area Chart) 생성
+    fig_area = px.area(
+        filtered_df,
+        x="기준일자",
+        y="누적관객수",
+        title=f"{selected_movie} - 기준일자별 누적 관객수 추이",
+    )
+
+    # 그래프 축 및 레이아웃 커스텀
+    fig_area.update_layout(
+        xaxis_title="기준일자", yaxis_title="누적 관객수", hovermode="x unified"
+    )
+
+    # 스트림릿 웹 화면에 그래프 출력
+    st.plotly_chart(fig_area, use_container_width=True)
+
+    # 하단 설명 영역
+    st.info(
+        "💡 **이 그래프로 알 수 있는 것:** 시간이 지남에 따라 관객수가 누적되는 증가 양상을 한눈에 파악할 수 있으며, 관객수 증가 폭이 둔화되는 흥행 완만 시점을 확인할 수 있습니다."
+    )
