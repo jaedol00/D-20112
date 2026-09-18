@@ -55,8 +55,13 @@ st.divider()
 # ---------------------------------------------------------
 st.header("2. 장르 및 영화별 총 관객수 분포")
 
+# 동일 영화명 중복으로 인한 Plotly 트리맵 에러 방지 (그룹화 처리)
+df_treemap = df.groupby(["genre", "movieNm"], as_index=False)[
+    "total_audi"
+].sum()
+
 fig2 = px.treemap(
-    df,
+    df_treemap,
     path=[px.Constant("전체 영화"), "genre", "movieNm"],
     values="total_audi",
     color="genre",
