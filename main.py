@@ -51,29 +51,27 @@ st.write(
 st.divider()
 
 # ---------------------------------------------------------
-# 그래프 2: 개봉일 스크린 수와 총 관객수의 관계 (산점도)
+# 그래프 2: 장르 및 영화별 총 관객수 분포 (트리맵)
 # ---------------------------------------------------------
-st.header("2. 개봉일 스크린 수와 총 관객수 관계")
+st.header("2. 장르 및 영화별 총 관객수 분포")
 
-fig2 = px.scatter(
+fig2 = px.treemap(
     df,
-    x="first_scrn",
-    y="total_audi",
+    path=[px.Constant("전체 영화"), "genre", "movieNm"],
+    values="total_audi",
     color="genre",
-    hover_data=["movieNm", "days_in_top10"],
-    labels={
-        "first_scrn": "개봉일 스크린 수",
-        "total_audi": "총 관객 수",
-        "genre": "장르",
-    },
-    title="스크린 수 대비 총 관객수 분포",
+    title="장르 및 영화별 총 관객수 트리맵",
+)
+
+fig2.update_traces(
+    hovertemplate="<b>%{label}</b><br>총 관객수: %{value:,}명<extra></extra>"
 )
 
 st.plotly_chart(fig2, use_container_width=True)
 
 st.subheader("💡 이 그래프로 알 수 있는 것")
 st.write(
-    "초기 스크린 확보가 최종 총 관객수에 미치는 양의 상관관계와 장르별 스크린 확보 규모의 차이를 분석할 수 있습니다."
+    "장르별 전체 흥행 규모와 함께 각 장르 안에서 어떤 영화가 총 관객수를 주요하게 견인했는지 비교할 수 있습니다."
 )
 
 st.divider()
