@@ -80,3 +80,40 @@ st.write(
 )
 
 st.divider()
+
+# ---------------------------------------------------------
+# 그래프 3: 총 관객수 히스토그램
+# ---------------------------------------------------------
+st.header("3. 총 관객수 분포")
+
+fig3 = px.histogram(
+    df,
+    x="total_audi",
+    nbins=30,
+    title="총 관객수 구간별 영화 편수 분포",
+    labels={"total_audi": "총 관객수", "count": "영화 편수"},
+    color_discrete_sequence=["#636EFA"],
+)
+
+fig3.update_layout(yaxis_title="영화 편수")
+fig3.update_traces(
+    hovertemplate="관객수 구간: %{x}<br>영화 편수: %{y}편<extra></extra>"
+)
+
+st.plotly_chart(fig3, use_container_width=True)
+
+# 데이터 계산 (최다 관객 영화 및 구간 밀집도 분석)
+top_movie_row = df.loc[df["total_audi"].idxmax()]
+top_movie_name = top_movie_row["movieNm"]
+top_movie_audi = top_movie_row["total_audi"]
+
+under_2m_count = (df["total_audi"] < 2000000).sum()
+under_2m_ratio = (under_2m_count / len(df)) * 100
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+st.write(
+    f"- 대부분의 영화(약 {under_2m_ratio:.1f}%, 전체 216편 중 {under_2m_count}편)가 관객수 **200만 명 미만** 구간에 대거 몰려 있으며 극소수의 영화만 대형 흥행을 기록한 모습을 보여줍니다.\n"
+    f"- 이 기간 중 가장 관객이 많은 영화는 **'{top_movie_name}'**(총 {top_movie_audi:,}명)입니다."
+)
+
+st.divider()
