@@ -149,3 +149,37 @@ st.write(
 )
 
 st.divider()
+
+# ---------------------------------------------------------
+# 그래프 5: 주요 장르별 총 관객수 박스플롯 (10편 이상 장르)
+# ---------------------------------------------------------
+st.header("5. 주요 장르별 총 관객수 분포 (박스플롯)")
+
+# 영화가 10편 이상인 장르 필터링
+genre_counts_series = df["genre"].value_counts()
+top_genres = genre_counts_series[genre_counts_series >= 10].index
+df_top_genres = df[df["genre"].isin(top_genres)]
+
+fig5 = px.box(
+    df_top_genres,
+    x="genre",
+    y="total_audi",
+    color="genre",
+    hover_name="movieNm",
+    points="outliers",
+    title="영화 10편 이상 주요 장르별 총 관객수 박스플롯",
+    labels={"genre": "장르", "total_audi": "총 관객수"},
+)
+
+fig5.update_traces(
+    hovertemplate="<b>영화명: %{hovertext}</b><br>총 관객수: %{y:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig5, use_container_width=True)
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+st.write(
+    "영화 편수가 10편 이상인 주요 장르별 관객수의 중앙값과 분포 범위를 비교할 수 있으며, 박스 바깥으로 튀어나온 점(이상치)에 마우스를 올려 대형 흥행 성공을 거둔 대작 영화를 식별할 수 있습니다."
+)
+
+st.divider()
