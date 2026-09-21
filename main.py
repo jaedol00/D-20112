@@ -223,7 +223,6 @@ st.divider()
 # ---------------------------------------------------------
 st.header("7. 제작 국가 및 장르별 영화 편수")
 
-# 제작 국가와 장르별 영화 편수 집계
 df_nation_genre = (
     df.groupby(["nation", "genre"]).size().reset_index(name="count")
 )
@@ -245,6 +244,38 @@ st.plotly_chart(fig7, use_container_width=True)
 st.subheader("💡 이 그래프로 알 수 있는 것")
 st.write(
     "제작 국가별 전체 영화 수와 각 국가 내에서 어떤 장르의 영화가 주로 제작/개봉되었는지 계층 구조로 한눈에 비교할 수 있습니다."
+)
+
+st.divider()
+
+# ---------------------------------------------------------
+# 그래프 8: 10위권에 오래 머문 영화는 총 관객도 많은가 (산점도)
+# ---------------------------------------------------------
+st.header("8. 10위권에 오래 머문 영화는 총 관객도 많은가")
+
+fig8 = px.scatter(
+    df,
+    x="days_in_top10",
+    y="total_audi",
+    color="genre",
+    hover_name="movieNm",
+    title="10위권에 오래 머문 영화는 총 관객도 많은가",
+    labels={
+        "days_in_top10": "10위권에 머문 날수",
+        "total_audi": "총 관객수",
+        "genre": "장르",
+    },
+)
+
+fig8.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>10위권 머문 날수: %{x}일<br>총 관객수: %{y:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig8, use_container_width=True)
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+st.write(
+    "박스오피스 Top 10에 머무른 기간이 길수록 총 관객수가 대체로 증가하는 강한 양의 상관관계를 보이는지, 혹은 짧은 기간 동안 폭발적인 관객을 동원한 영화가 존재하는지 확인할 수 있습니다."
 )
 
 st.divider()
