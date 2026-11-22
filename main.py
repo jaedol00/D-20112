@@ -14,7 +14,7 @@ from sklearn.metrics import (
 
 # 페이지 기본 설정
 st.set_page_config(
-    page_title="다이아몬드 가격 예측 및 회귀 분석 대시보드",
+    page_title="다이아몬드 가격 예측 대시보드",
     page_icon="💎",
     layout="wide",
 )
@@ -31,7 +31,7 @@ CLARITY_ORDER = [
 
 @st.cache_data
 def load_and_clean_data(file_path_or_buffer):
-    """원본 또는 정제 CSV를 불러와 데이터 정제 후 이력 반환"""
+    # 원본 또는 정제 CSV를 불러와 데이터 정제 후 이력 반환
     raw_df = pd.read_csv(file_path_or_buffer)
     if "Unnamed: 0" in raw_df.columns:
         raw_df = raw_df.drop(columns=["Unnamed: 0"])
@@ -68,7 +68,7 @@ def load_and_clean_data(file_path_or_buffer):
 
 @st.cache_resource
 def train_ols_model(df: pd.DataFrame):
-    """전처리 및 8:2 층화 분할 후 OLS 선형회귀 모델 학습"""
+    # 전처리 및 8:2 층화 분할 후 OLS 선형회귀 모델 학습
     work_df = df.drop(columns=["x", "y", "z"]).copy()
     work_df["log_carat"] = np.log(work_df["carat"])
     work_df["log_price"] = np.log(work_df["price"])
@@ -164,4 +164,37 @@ def predict_single_diamond(
     depth,
     table,
 ):
-    """단일 다이아몬드
+    # 단일 다이아몬드 입력 스펙의 달러 예측값 및 신뢰 구간 계산
+    row = pd.DataFrame(
+        {
+            "depth": [depth],
+            "table": [table],
+            "log_carat": [np.log(carat)],
+            "cut": pd.Categorical(
+                [cut], categories=CUT_ORDER, ordered=True
+            ),
+            "color": pd.Categorical(
+                [color], categories=COLOR_ORDER, ordered=True
+            ),
+            "clarity": pd.Categorical(
+                [clarity], categories=CLARITY_ORDER, ordered=True
+            ),
+        }
+    )
+    row_encoded = pd.get_dummies(
+        row,
+        columns=["cut", "color", "clarity"],
+        drop_first=True,
+        dtype=int,
+    )
+    row_encoded = row_encoded.reindex(
+        columns=feature_cols, fill_value=0
+    )
+    row_sm = sm.add_constant(row_encoded, has_constant="add")
+
+    pred_res = model.get_prediction(row_sm).summary_frame(
+        alpha=0.05
+    )
+    pred_log = float(pred_res["mean"].iloc[0])
+    obs_ci_low = float(pred_res["obs_ci_lower"].iloc[0])
+    obs_ci_high = float(pred
