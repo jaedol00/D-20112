@@ -22,8 +22,8 @@ st.set_page_config(
 # 2. 데이터 로드 및 모델 학습 (캐싱 적용)
 @st.cache_data
 def load_data():
-    train_df = pd.read_csv("diamonds_train.csv")
-    test_df = pd.read_csv("diamonds_test.csv")
+    train_df = pd.read_csv("train.csv")
+    test_df = pd.read_csv("test.csv")
     return train_df, test_df
 
 @st.cache_resource
@@ -392,7 +392,8 @@ with tab3:
 
     with c_coef2:
         dummy_only = coef_df[coef_df["Feature"] != "log_carat"].copy()
-        dummy_only["그룹"] = dummy_only["Feature"].apply(lambda x: x.split("_")[0].upper())        fig_prem = px.bar(
+        dummy_only["그룹"] = dummy_only["Feature"].apply(lambda x: x.split("_")[0].upper())
+        fig_prem = px.bar(
             dummy_only,
             x="Premium_Pct",
             y="Feature",
