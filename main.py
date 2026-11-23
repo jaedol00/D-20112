@@ -170,31 +170,4 @@ def predict_single_diamond(
             "depth": [depth],
             "table": [table],
             "log_carat": [np.log(carat)],
-            "cut": pd.Categorical(
-                [cut], categories=CUT_ORDER, ordered=True
-            ),
-            "color": pd.Categorical(
-                [color], categories=COLOR_ORDER, ordered=True
-            ),
-            "clarity": pd.Categorical(
-                [clarity], categories=CLARITY_ORDER, ordered=True
-            ),
-        }
-    )
-    row_encoded = pd.get_dummies(
-        row,
-        columns=["cut", "color", "clarity"],
-        drop_first=True,
-        dtype=int,
-    )
-    row_encoded = row_encoded.reindex(
-        columns=feature_cols, fill_value=0
-    )
-    row_sm = sm.add_constant(row_encoded, has_constant="add")
-
-    pred_res = model.get_prediction(row_sm).summary_frame(
-        alpha=0.05
-    )
-    pred_log = float(pred_res["mean"].iloc[0])
-    obs_ci_low = float(pred_res["obs_ci_lower"].iloc[0])
-    obs_ci_high = float(pred
+            "cut": pd
