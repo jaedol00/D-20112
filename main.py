@@ -22,8 +22,8 @@ st.set_page_config(
 # 2. 데이터 로드 및 모델 학습 (캐싱 적용)
 @st.cache_data
 def load_data():
-    train_df = pd.read_csv("train.csv")
-    test_df = pd.read_csv("test.csv")
+    train_df = pd.read_csv("diamonds_train.csv")
+    test_df = pd.read_csv("diamonds_test.csv")
     return train_df, test_df
 
 @st.cache_resource
